@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"main/internal/app"
+	"main/internal/client"
 	"main/internal/config"
 )
 
@@ -16,7 +17,9 @@ func main() {
 		panic(err)
 	}
 
-	application := app.New(cfg)
+	client := client.New()
+
+	application := app.New(cfg, client)
 	err = application.Start(cfg)
 	if err != nil {
 		log.Printf("error %v", err)
