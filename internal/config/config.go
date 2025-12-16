@@ -4,14 +4,17 @@ import (
 	"errors"
 
 	"github.com/caarlos0/env/v11"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	HTTPAddr string `env:"HTTP_ADDR" envDefault:":3030"`
-	LogLevel string `env:"LOG_LEVEL" envDefault:"INFO"`
+	HTTPAddr    string `env:"HTTP_ADDR" envDefault:":3030"`
+	LogLevel    string `env:"LOG_LEVEL" envDefault:"INFO"`
+	StoragePath string `env:"STORAGE_PATH" envDefault:""`
 }
 
 func GetConfig() (*Config, error) {
+	_ = godotenv.Load()
 	cfg := &Config{}
 	if err := env.Parse(cfg); err != nil {
 		return nil, errors.New("failed to parse config")

@@ -7,10 +7,6 @@ import (
 	"main/internal/config"
 )
 
-func init() {
-	config.GetConfig()
-}
-
 func main() {
 	cfg, err := config.GetConfig()
 	if err != nil {
@@ -22,7 +18,6 @@ func main() {
 	application := app.New(cfg, client)
 	err = application.Start(cfg)
 	if err != nil {
-		log.Printf("error %v", err)
+		log.Printf("error %v\n", err)
 	}
-
 }

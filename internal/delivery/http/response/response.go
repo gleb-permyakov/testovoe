@@ -12,6 +12,8 @@ func ResponseError(c *gin.Context, code int, msg string) {
 	})
 }
 
-func ResponseOK(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{})
+func ResponseOK(c *gin.Context, message interface{}) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": message,
+	})
 }

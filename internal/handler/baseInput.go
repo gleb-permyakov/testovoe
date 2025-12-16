@@ -5,15 +5,17 @@ import (
 	"main/internal/client"
 	"main/internal/delivery/http/response"
 	"main/internal/service"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func BaseInput(c *gin.Context) {
 
+	service.WriteUrl("b", "c")
+
 	var body struct {
-		Links []string `json:"links" binding:"required"`
+		Links      []string `json:"links"`
+		Links_list []string `json:"links_list"`
 	}
 
 	err := c.Bind(&body)
@@ -43,7 +45,5 @@ func BaseInput(c *gin.Context) {
 
 	states := service.CheckURL(body.Links)
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": states,
-	})
+	response.ResponseOK(c, states)
 }
