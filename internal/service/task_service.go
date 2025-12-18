@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"main/internal/client"
 	"main/internal/config"
@@ -25,35 +24,13 @@ func (t *TaskService) CheckURL(links []string) map[string]string {
 			defer wg.Done()
 			state := t.Client.Get(link)
 			linksStates[link] = state
-			// writeUrl(link, state)
+			WriteUrl(link, state)
 		}()
 	}
 
 	wg.Wait()
 
 	return linksStates
-}
-
-func WriteJson() {
-	cfg, err := config.GetConfig()
-	if err != nil {
-		log.Printf("error reading config %v\n", err)
-		return
-	}
-	storage_path := cfg.StoragePath
-
-	inner_json, err := os.ReadFile(storage_path)
-	if err != nil {
-		log.Printf("created storage-file %s\n", storage_path)
-		os.Create(storage_path)
-	}
-
-	var data map[string]interface{}
-	err = json.Unmarshal(inner_json, &data)
-	if err != nil {
-		log.Printf("error unmarshalling %v\n", err)
-		return
-	}
 }
 
 func WriteUrl(url, state string) {
@@ -71,18 +48,13 @@ func WriteUrl(url, state string) {
 		file.Close()
 	}
 
-	type Links struct {
+	type JsonFile struct {
 		Requested_links [][]string
 	}
 
-
-
-	// файл пустой -> заполняем с нуля
 	if len(data) == 2 || len(data) == 0 {
-		// links := Links{
-		// 	Requested_links: [][]string{{url, state}},
-		// }
-		links := map[string]interface
+		var links JsonFile
+		links.Requested_links = [][]string{{url, state}}
 		j_file, err := json.MarshalIndent(links, "", " ")
 		if err != nil {
 			log.Printf("error parsing json %v\n", err)
@@ -90,25 +62,26 @@ func WriteUrl(url, state string) {
 		}
 		os.WriteFile(storage_path, j_file, 0644)
 	} else {
-		var j_file map[string]interface{}
-		data, err = os.ReadFile(storage_path)
+		var links JsonFile
+		j_file, err := os.ReadFile(storage_path)
 		if err != nil {
 			log.Printf("error reading file %v\n", err)
 			return
 		}
-
-		err = json.Unmarshal(data, &j_file)
+		err = json.Unmarshal(j_file, &links)
 		if err != nil {
 			log.Printf("error unmarshalling file %v\n", err)
 			return
 		}
 
-		fmt.Println(j_file["Requested_links"])
-	}
+		link := []string{url, state}
+		links.Requested_links = append(links.Requested_links, link)
 
-	// link_to_add := Links{
-	// 	requested_links: [][]string{
-	// 		{url, state},
-	// 	},
-	// }
+		j_file, err = json.MarshalIndent(links, "", " ")
+		if err != nil {
+			log.Printf("error parsing json %v\n", err)
+			return
+		}
+		os.WriteFile(storage_path, j_file, 0644)
+	}
 }

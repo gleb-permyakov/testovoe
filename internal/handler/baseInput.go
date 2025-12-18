@@ -11,8 +11,6 @@ import (
 
 func BaseInput(c *gin.Context) {
 
-	service.WriteUrl("b", "c")
-
 	var body struct {
 		Links      []string `json:"links"`
 		Links_list []string `json:"links_list"`
